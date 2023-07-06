@@ -2,12 +2,13 @@ package study.datajpa.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 
+import javax.persistence.LockModeType;
+import javax.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,5 +45,29 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     //요청한 limit 수보다 1개 더 요청함
     //Slice<Member> findByAge(int age, Pageable pageable);
 
+    //bulk update : 벌크연산 후에는 영속성 컨텍스트를 날려주는게 안전하다 (벌크는 db에 바로 업뎃함)
+    @Modifying(clearAutomatically = true)
+    @Query("update Member m set m.age = m.age+1 where m.age >= :age")
+    int bulkAgePlus(@Param("age") int age);
+
+    @Query("select m from Member m left join fetch m.team")
+    List<Member> findMemberFetchJoin();
+
+    @Override
+    @EntityGraph(attributePaths = {"team"})
+    List<Member> findAll();
+
+    @Query("select m from Member m")
+    @EntityGraph(attributePaths = {"team"})
+    List<Member> findMemberEntityGraph();
+
+    @EntityGraph(attributePaths = {"team"})
+    List<Member> findEntityGraphByUsername(@Param("username") String username);
+
+    @QueryHints(value = @QueryHint(name = "org.hibernate.readOnly", value="true"))
+    Member findReadOnlyByUsername(@Param("username") String username);
+
+    @Lock(LockModeType.OPTIMISTIC)
+    List<Member> findLockByUsername(@Param("username") String username);
 }
 

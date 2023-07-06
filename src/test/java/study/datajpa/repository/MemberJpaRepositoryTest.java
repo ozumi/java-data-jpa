@@ -7,6 +7,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberJpaRepositoryTest {
     @Autowired
     MemberJpaRepository memberJpaRepository;
-
     @Test
     public void testMember() {
         Member member = new Member("memberA");

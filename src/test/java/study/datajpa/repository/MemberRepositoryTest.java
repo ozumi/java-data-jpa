@@ -25,7 +25,6 @@ class MemberRepositoryTest {
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
 
-
     @Test
     public void testMember() {
         Member member = new Member("memberA");
@@ -177,5 +176,44 @@ class MemberRepositoryTest {
 //        assertThat(page.isFirst()).isTrue();
 //        assertThat(page.hasNext()).isTrue();
 
+    }
+
+    @Test
+    void bulkUpdate() {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 20));
+        memberRepository.save(new Member("member3", 30));
+        memberRepository.save(new Member("member4", 40));
+
+        //when
+        int count = memberRepository.bulkAgePlus(25);
+
+        //then
+        assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    void fetchJoin() {
+        //given
+        Team team1 = new Team("teamA");
+        Team team2 = new Team("teamB");
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+        memberRepository.save(new Member("member1", 10, team1));
+        memberRepository.save(new Member("member2", 20, team2));
+
+//        em.flush();
+//        em.clear();
+
+        //when
+        List<Member> members = memberRepository.findAll();
+
+        //then
+        for (Member member : members) {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.getTeam().getClass() = " + member.getTeam().getClass());
+            System.out.println("team = " + member.getTeam().getName());
+        }
     }
 }
