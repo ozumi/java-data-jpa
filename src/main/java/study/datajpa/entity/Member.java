@@ -10,7 +10,7 @@ import javax.persistence.*;
 @ToString(of = {"id", "username", "Age"})
 @NamedQuery( name="Member.findByUsername",
              query="select m from Member m where m.username = :username")
-public class Member extends JpaBaseEntity{
+public class Member extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "member_id")
