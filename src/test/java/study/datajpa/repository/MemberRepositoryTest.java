@@ -12,6 +12,7 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberRepositoryTest {
     @Autowired MemberRepository memberRepository;
     @Autowired TeamRepository teamRepository;
+    @Autowired EntityManager em;
 
     @Test
     public void testMember() {
@@ -85,7 +87,7 @@ class MemberRepositoryTest {
         Team team = new Team("teamA");
         teamRepository.save(team);
 
-        Member member = new Member("A", 10);
+        Member member = new Member("AA", 10);
         member.setTeam(team);
         memberRepository.save(member);
 
@@ -99,8 +101,8 @@ class MemberRepositoryTest {
 
     @Test
     public void findByNames() {
-        Member member = new Member("A", 10);
-        Member member2 = new Member("B", 20);
+        Member member = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
 
         memberRepository.save(member);
         memberRepository.save(member2);
@@ -113,13 +115,13 @@ class MemberRepositoryTest {
 
     @Test
     public void returnType() {
-        Member member = new Member("A", 10);
-        Member member2 = new Member("B", 20);
+        Member member = new Member("AAAA", 10);
+        Member member2 = new Member("BBBB", 20);
 
         memberRepository.save(member);
         memberRepository.save(member2);
 
-        Optional<Member> foundMember = memberRepository.findOptionalByUsername("A");
+        Optional<Member> foundMember = memberRepository.findOptionalByUsername("AAAA");
         System.out.println("foundMember = " + foundMember.get());
     }
 
@@ -127,14 +129,14 @@ class MemberRepositoryTest {
     @Test
     public void pagingTest() {
         //given
-        memberRepository.save(new Member("member1", 10));
-        memberRepository.save(new Member("member2", 10));
-        memberRepository.save(new Member("member3", 10));
-        memberRepository.save(new Member("member4", 10));
-        memberRepository.save(new Member("member5", 10));
-        memberRepository.save(new Member("member6", 10));
+        memberRepository.save(new Member("member1", 100));
+        memberRepository.save(new Member("member2", 100));
+        memberRepository.save(new Member("member3", 100));
+        memberRepository.save(new Member("member4", 100));
+        memberRepository.save(new Member("member5", 100));
+        memberRepository.save(new Member("member6", 100));
 
-        int age = 10;
+        int age = 100;
         PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"));
 
         //when
@@ -203,8 +205,8 @@ class MemberRepositoryTest {
         memberRepository.save(new Member("member1", 10, team1));
         memberRepository.save(new Member("member2", 20, team2));
 
-//        em.flush();
-//        em.clear();
+        em.flush();
+        em.clear();
 
         //when
         List<Member> members = memberRepository.findAll();
@@ -215,5 +217,10 @@ class MemberRepositoryTest {
             System.out.println("member.getTeam().getClass() = " + member.getTeam().getClass());
             System.out.println("team = " + member.getTeam().getName());
         }
+    }
+
+    @Test
+    void callCustom() {
+        List<Member> members = memberRepository.findMemberCustom();
     }
 }
