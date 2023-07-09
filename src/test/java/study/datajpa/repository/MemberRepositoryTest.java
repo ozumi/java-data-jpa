@@ -223,4 +223,50 @@ class MemberRepositoryTest {
     void callCustom() {
         List<Member> members = memberRepository.findMemberCustom();
     }
+
+    @Test
+    void projection() {
+        //given
+        Team team1 = new Team("teamA");
+        Team team2 = new Team("teamB");
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+        memberRepository.save(new Member("member1", 10, team1));
+        memberRepository.save(new Member("member2", 20, team2));
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<UsernameOnlyDto> member1 = memberRepository.findProjectionByUsername("member1", UsernameOnlyDto.class);
+
+        //then
+        for (UsernameOnlyDto usernameOnlyDto : member1) {
+            System.out.println("usernameOnlyDto.getUsername() = " + usernameOnlyDto.getUsername());
+        }    
+    }
+
+    @Test
+    void nestedProjection() {
+        //given
+        Team team1 = new Team("teamA");
+        Team team2 = new Team("teamB");
+        teamRepository.save(team1);
+        teamRepository.save(team2);
+        memberRepository.save(new Member("m1", 10, team1));
+        memberRepository.save(new Member("m2", 20, team2));
+
+        em.flush();
+        em.clear();
+
+        //when
+        List<NestedClosedProjection> member = memberRepository.findProjectionByUsername("m1", NestedClosedProjection.class);
+
+        //then
+        for (NestedClosedProjection nestedClosedProjection : member) {
+            System.out.println("name = " + nestedClosedProjection.getUsername());
+            System.out.println("team name = " + nestedClosedProjection.getTeam().getName());
+
+        }
+    }
 }
